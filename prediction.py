@@ -5,8 +5,11 @@
 #
 # =============================================================================
 
+# Import libraries
+import numpy as np
 import pandas as pd
 
+# import dataset
 columns = ['CRIM', 
            'ZN', 
            'INDUS', 
@@ -23,3 +26,8 @@ columns = ['CRIM',
            'MEDV']
 
 dataset = pd.read_csv('housing_dataset.csv', names=columns, delimiter=r"\s+")
+
+# Some view of dataset
+print(dataset.head(6))
+print(np.shape(dataset))
+print(dataset.describe())
