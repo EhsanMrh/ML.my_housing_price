@@ -74,4 +74,55 @@ for col in x.columns:
     if np.abs(x[col].skew()) > 0.3:
         x[col] = np.log1p(x[col])
 
-# Test for branch bug
+
+# Import cross validation libraries
+from sklearn.model_selection import cross_val_score, KFold
+
+# Regressors
+from sklearn.linear_model import LinearRegression, Ridge
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import MinMaxScaler
+
+min_max_scaler = MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(x)
+scores_map = {}
+kf = KFold(n_splits=10)
+
+
+# Linear Model
+linear_model = LinearRegression()
+scores = cross_val_score(linear_model, 
+                          x_scaled,
+                          y,
+                          cv = kf, 
+                          scoring = 'neg_mean_squared_error')
+ 
+print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+scores_map['LinearRegression'] = scores
+ 
+# Ridge Model
+ridge_model = Ridge()
+scores = cross_val_score(ridge_model, 
+                          x_scaled, 
+                          y, 
+                          cv = kf, 
+                          scoring= 'neg_mean_squared_error')
+ 
+print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+scores_map['Ridge'] = scores
+
+# Polynomial Model
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+
+poly_ridge_model = make_pipeline(PolynomialFeatures(degree=3), ridge_model)
+
+scores = cross_val_score(poly_ridge_model,
+                         x_scaled,
+                         y,
+                         cv = kf,
+                         scoring= 'neg_mean_squared_error')
+
+print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+scores_map['PolyRidge'] = scores
