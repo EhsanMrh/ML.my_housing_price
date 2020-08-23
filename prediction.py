@@ -126,3 +126,82 @@ scores = cross_val_score(poly_ridge_model,
 
 print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
 scores_map['PolyRidge'] = scores
+
+# SVM Model
+from sklearn.svm import SVR
+from sklearn.model_selection import GridSearchCV
+
+svr_model = SVR(kernel = 'rbf', C = 1e3, gamma = 0.1)
+
+grid_svm = GridSearchCV(svr_model,
+                        cv = kf,
+                        param_grid={
+                            "C": [1e0, 1e2, 1e3],
+                            "gamma": np.logspace(-2, 2, 5)},
+                        scoring='neg_mean_squared_error')
+grid_svm.fit(x_scaled, y)
+print("Best Classifier:", grid_svm.best_estimator_)
+
+
+
+scores = cross_val_score(svr_model,
+                         x_scaled,
+                         y,
+                         cv = kf,
+                         scoring='neg_mean_squared_error')
+
+scores_map['SVR'] = scores
+print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+
+
+
+# Decison Tree model
+from sklearn.tree import DecisionTreeRegressor
+
+dt_model = DecisionTreeRegressor(max_depth=4)
+
+grid_dt = GridSearchCV(dt_model,
+                       cv = kf,
+                       param_grid={
+                           "max_depth": [1,2,3,4,5,6,7,8,9,10]},
+                       scoring='neg_mean_squared_error')
+grid_dt.fit(x_scaled, y)
+
+print("Best Decision Tree Model:", grid_dt.best_estimator_)
+
+
+
+scores = cross_val_score(dt_model,
+                         x_scaled,
+                         y,
+                         cv = kf,
+                         scoring= 'neg_mean_squared_error')
+
+scores_map['DecisionTree'] = scores
+print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+
+# K-Neighbor Regressor
+from sklearn.neighbors import KNeighborsRegressor
+
+knn = KNeighborsRegressor(n_neighbors=7)
+scores = cross_val_score(knn, x_scaled, y, cv=kf, scoring='neg_mean_squared_error')
+scores_map['KNeighborsRegressor'] = scores
+grid_knr = GridSearchCV(knn, cv=kf, param_grid={"n_neighbors" : [2, 3, 4, 5, 6, 7]}, scoring='neg_mean_squared_error')
+grid_knr.fit(x_scaled, y)
+print("Best K-Neighbor Regressor :", grid_knr.best_estimator_)
+print("KNN Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+
+#
+
+# =============================================================================
+# from sklearn.ensemble import GradientBoostingRegressor
+# 
+# gbr = GradientBoostingRegressor(alpha=0.9,learning_rate=0.05, max_depth=2, min_samples_leaf=5, min_samples_split=2, n_estimators=100, random_state=30)
+# #param_grid={'n_estimators':[100, 200], 'learning_rate': [0.1,0.05,0.02], 'max_depth':[2, 4,6], 'min_samples_leaf':[3,5,9]}
+# #grid_sv = GridSearchCV(gbr, cv=kf, param_grid=param_grid, scoring='neg_mean_squared_error')
+# #grid_sv.fit(x_scaled, y)
+# #print("Best classifier :", grid_sv.best_estimator_)
+# scores = cross_val_score(gbr, x_scaled, y, cv=kf, scoring='neg_mean_squared_error')
+# scores_map['GradientBoostingRegressor'] = scores
+# print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+# =============================================================================
