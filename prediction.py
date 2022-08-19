@@ -190,18 +190,3 @@ grid_knr = GridSearchCV(knn, cv=kf, param_grid={"n_neighbors" : [2, 3, 4, 5, 6, 
 grid_knr.fit(x_scaled, y)
 print("Best K-Neighbor Regressor :", grid_knr.best_estimator_)
 print("KNN Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
-
-#
-
-# =============================================================================
-# from sklearn.ensemble import GradientBoostingRegressor
-# 
-# gbr = GradientBoostingRegressor(alpha=0.9,learning_rate=0.05, max_depth=2, min_samples_leaf=5, min_samples_split=2, n_estimators=100, random_state=30)
-# #param_grid={'n_estimators':[100, 200], 'learning_rate': [0.1,0.05,0.02], 'max_depth':[2, 4,6], 'min_samples_leaf':[3,5,9]}
-# #grid_sv = GridSearchCV(gbr, cv=kf, param_grid=param_grid, scoring='neg_mean_squared_error')
-# #grid_sv.fit(x_scaled, y)
-# #print("Best classifier :", grid_sv.best_estimator_)
-# scores = cross_val_score(gbr, x_scaled, y, cv=kf, scoring='neg_mean_squared_error')
-# scores_map['GradientBoostingRegressor'] = scores
-# print("MSE: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
-# =============================================================================
